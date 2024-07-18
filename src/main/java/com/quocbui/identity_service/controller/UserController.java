@@ -1,19 +1,24 @@
 package com.quocbui.identity_service.controller;
 
+import com.quocbui.identity_service.dto.response.ApiResponse;
 import com.quocbui.identity_service.dto.request.UserCreationRequest;
 import com.quocbui.identity_service.dto.request.UserUpdateRequest;
+import com.quocbui.identity_service.dto.response.UserResponse;
 import com.quocbui.identity_service.entity.User;
 import com.quocbui.identity_service.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/users")
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class UserController {
-    @Autowired
-    private UserService userService;
+    UserService userService;
 
     @GetMapping("")
     public List<User> getAllUsers() {
@@ -21,17 +26,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable String userId) {
+    public UserResponse getUser(@PathVariable String userId) {
         return userService.getUser(userId);
     }
 
     @PostMapping("")
-    User createUser(@RequestBody UserCreationRequest req) {
-        return userService.createUser(req);
+    ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest req) {
+        ApiResponse<UserResponse> userApiResponse = new ApiResponse<>();
+        userApiResponse.setResult(userService.createUser(req));
+        return userApiResponse;
     }
 
     @PutMapping("/{userId}")
-    User updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest req) {
+    UserResponse updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest req) {
         return userService.updateUser(userId, req);
     }
 

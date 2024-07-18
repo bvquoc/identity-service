@@ -2,51 +2,54 @@ package com.quocbui.identity_service.service;
 
 import com.quocbui.identity_service.dto.request.UserCreationRequest;
 import com.quocbui.identity_service.dto.request.UserUpdateRequest;
+import com.quocbui.identity_service.dto.response.UserResponse;
 import com.quocbui.identity_service.entity.User;
+import com.quocbui.identity_service.exception.AppException;
+import com.quocbui.identity_service.exception.ErrorCode;
+import com.quocbui.identity_service.mapper.UserMapper;
 import com.quocbui.identity_service.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
 public class UserService {
-    @Autowired
-    private UserRepository userRepository;
+    UserRepository userRepository;
+    UserMapper userMapper;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
     }
 
-    public User getUser(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+    public UserResponse getUser(String id) {
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
-    public User createUser(UserCreationRequest req) {
+    public UserResponse createUser(UserCreationRequest req) {
         if (userRepository.existsByUsername(req.getUsername())) {
-            throw new RuntimeException("Username already exists");
+            throw new AppException(ErrorCode.USER_EXISTED_BY_USERNAME);
         }
         if (userRepository.existsByEmail(req.getEmail())) {
-            throw new RuntimeException("Email already exists");
+            throw new AppException(ErrorCode.USER_EXISTED_BY_EMAIL);
         }
 
-        User user = new User();
-        user.setUsername(req.getUsername());
-        user.setPassword(req.getPassword());
-        user.setEmail(req.getEmail());
-        user.setDisplayName(req.getDisplayName());
-        user.setAvatarUrl(req.getAvatarUrl());
-        user.setDob(req.getDob());
-        return userRepository.save(user);
+        User user = userMapper.toUser(req);
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        return userMapper.toUserResponse(userRepository.save(user));
     }
 
-    public User updateUser(String userId, UserUpdateRequest req) {
-        User user = this.getUser(userId);
-        user.setPassword(req.getPassword());
-        user.setDisplayName(req.getDisplayName());
-        user.setAvatarUrl(req.getAvatarUrl());
-        user.setDob(req.getDob());
-        return userRepository.save(user);
+    public UserResponse updateUser(String userId, UserUpdateRequest req) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        userMapper.updateUser(user, req);
+        return userMapper.toUserResponse(user);
     }
 
     public void deleteUser(String userId) {
