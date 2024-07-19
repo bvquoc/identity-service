@@ -15,6 +15,8 @@ import com.quocbui.identity_service.exception.CustomError;
 import com.quocbui.identity_service.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -30,7 +32,9 @@ import java.util.Date;
 public class AuthenticationService {
     UserRepository userRepository;
 
-    protected static final String SIGNER_SECRET_KEY = "3mcLqP6VR8DgRGGk/sFUZXjlOGq/meuYGmT4+JhfnrAKaItGk9qvHVoQInKxcXFb";
+    @NonFinal
+    @Value("${jwt.signer.secret-key}")
+    protected static String SIGNER_SECRET_KEY;
 
     public AuthenticationResponse authenticate(AuthenticationRequest req) {
         User user = userRepository.findByUsername(req.getUsername()).orElseThrow(() -> new AppException(CustomError.USER_NOT_EXISTED));
