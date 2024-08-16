@@ -1,12 +1,13 @@
 package com.quocbui.identity_service.controller;
 
-import com.nimbusds.jose.JOSEException;
+import com.quocbui.identity_service.dto.request.ApiResponse;
 import com.quocbui.identity_service.dto.request.AuthenticationRequest;
 import com.quocbui.identity_service.dto.request.IntrospectRequest;
-import com.quocbui.identity_service.dto.response.ApiResponse;
 import com.quocbui.identity_service.dto.response.AuthenticationResponse;
 import com.quocbui.identity_service.dto.response.IntrospectResponse;
 import com.quocbui.identity_service.service.AuthenticationService;
+import com.nimbusds.jose.JOSEException;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -19,14 +20,16 @@ import java.text.ParseException;
 @RestController
 @RequestMapping("/auth")
 @RequiredArgsConstructor
-@FieldDefaults(makeFinal = true, level = lombok.AccessLevel.PRIVATE)
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationController {
     AuthenticationService authenticationService;
 
-    @PostMapping("/login")
-    public ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest req) {
-        AuthenticationResponse result = authenticationService.authenticate(req);
-        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+    @PostMapping("/token")
+    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request){
+        var result = authenticationService.authenticate(request);
+        return ApiResponse.<AuthenticationResponse>builder()
+                .result(result)
+                .build();
     }
 
     @PostMapping("/introspect")

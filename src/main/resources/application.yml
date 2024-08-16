@@ -16,5 +16,4 @@ spring:
     password: root
 
 jwt:
-  signer:
-    secret-key: 3mcLqP6VR8DgRGGk/sFUZXjlOGq/meuYGmT4+JhfnrAKaItGk9qvHVoQInKxcXFb
+  signerKey: "3mcLqP6VR8DgRGGk/sFUZXjlOGq/meuYGmT4+JhfnrAKaItGk9qvHVoQInKxcXFb"
