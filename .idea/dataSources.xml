@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="martin-tryout-ncl@10.113.199.42" uuid="9c50f3a9-f0ed-4ab5-b8de-a5adf9b43ad3">
+    <data-source source="LOCAL" name="martindb@10.113.199.42" uuid="1e273b01-76d0-4f73-a167-8d82ba709da7">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
+      <imported>true</imported>
+      <remarks>$PROJECT_DIR$/src/main/resources/application.yml</remarks>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://10.113.199.42:13306</jdbc-url>
+      <jdbc-url>jdbc:mysql://10.113.199.42:13306/martindb?useSSL=false&amp;serverTimezone=UTC&amp;useLegacyDatetimeCode=false</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
